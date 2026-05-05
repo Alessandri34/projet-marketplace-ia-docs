@@ -334,11 +334,23 @@
                     navList.appendChild(li);
                 });
                 
-                // Select first item by default
-                const firstItem = navList.querySelector('.nav-item');
-                if (firstItem) {
-                    setActiveNav(firstItem);
-                    renderContent(markdownData[0]);
+                // Select default item or requested item from synthesis
+                let targetIndex = 0;
+                const requestedDoc = sessionStorage.getItem('openDoc');
+                if (requestedDoc) {
+                    const foundIndex = markdownData.findIndex(d => d.name === requestedDoc);
+                    if (foundIndex !== -1) {
+                        targetIndex = foundIndex;
+                    }
+                    sessionStorage.removeItem('openDoc'); // clean up
+                }
+
+                const items = navList.querySelectorAll('.nav-item');
+                if (items.length > targetIndex) {
+                    setActiveNav(items[targetIndex]);
+                    renderContent(markdownData[targetIndex]);
+                    // Scroll sidebar to the active item
+                    items[targetIndex].scrollIntoView({ block: 'center', behavior: 'smooth' });
                 }
             } else {
                 contentWrapper.innerHTML = `
